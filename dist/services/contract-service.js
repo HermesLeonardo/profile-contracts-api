@@ -7,6 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { Profile } from "../models/profile-models.js";
 import { ContractRepository } from "../repositories/contract-repository.js";
 export class ContractService {
     constructor() {
@@ -84,6 +85,28 @@ export class ContractService {
                 else {
                     throw new Error("Um erro desconhecido ocorreu ao tentar excluir o contrato.");
                 }
+            }
+        });
+    }
+    // Método para buscar contratos de um perfil
+    getContractsByProfile(profileId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Consulta 1: Contratos onde o perfil é o cliente
+                const clientContracts = yield this.contractRepository.findAll({
+                    where: { clientId: profileId },
+                    include: [{ model: Profile, as: "client" }]
+                });
+                // Consulta 2: Contratos onde o perfil é o contratante
+                const contractorContracts = yield this.contractRepository.findAll({
+                    where: { clientId: profileId },
+                    include: [{ model: Profile, as: "contractor" }]
+                });
+                // Combinar os resultados das duas consultas
+                return [...clientContracts, ...contractorContracts];
+            }
+            catch (error) {
+                throw new Error(`Falha ao recuperar os contratos para o Profile de ID ${profileId}: ${error}`);
             }
         });
     }

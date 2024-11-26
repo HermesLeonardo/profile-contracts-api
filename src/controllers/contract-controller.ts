@@ -13,7 +13,7 @@ export class ContractController {
             const newContract = await this.contractService.createContract(req.body);
             res.status(201).json(newContract);
         } catch (error) {
-            res.status(500).json({ message: "Failed to create contract", error: (error as Error).message });
+            res.status(500).json({ message: "Falha ao criar os contratos", error: (error as Error).message });
         }
     }
 
@@ -22,7 +22,7 @@ export class ContractController {
             const contracts = await this.contractService.getAllContracts();
             res.status(200).json(contracts);
         } catch (error) {
-            res.status(500).json({ message: "Failed to retrieve contracts", error: (error as Error).message });
+            res.status(500).json({ message: "Falha ao recuperar o contratos", error: (error as Error).message });
         }
     }
 
@@ -32,10 +32,10 @@ export class ContractController {
             if (contract) {
                 res.status(200).json(contract);
             } else {
-                res.status(404).json({ message: "Contract not found" });
+                res.status(404).json({ message: "Contrato não encontrado" });
             }
         } catch (error) {
-            res.status(500).json({ message: "Failed to retrieve contract", error: (error as Error).message });
+            res.status(500).json({ message: "Falha ao recuperar o contrato", error: (error as Error).message });
         }
     }
 
@@ -45,10 +45,10 @@ export class ContractController {
             if (updatedContract) {
                 res.status(200).json(updatedContract);
             } else {
-                res.status(404).json({ message: "Contract not found" });
+                res.status(404).json({ message: "Contrato não encontrado" });
             }
         } catch (error) {
-            res.status(500).json({ message: "Failed to update contract", error: (error as Error).message });
+            res.status(500).json({ message: "Falha ao atualizar o contrato", error: (error as Error).message });
         }
     }
 
@@ -57,7 +57,20 @@ export class ContractController {
             await this.contractService.deleteContract(Number(req.params.id));
             res.status(204).send();
         } catch (error) {
-            res.status(500).json({ message: "Failed to delete contract", error: (error as Error).message });
+            res.status(500).json({ message: "Falha ao deletar o contrato", error: (error as Error).message });
         }
     }
+    async getContractsByProfile(req: Request, res: Response) {
+        try {
+            const profileId = Number(req.params.profileId); // Obtém o ID do perfil da rota
+            const contracts = await this.contractService.getContractsByProfile(profileId); // Chama o método no serviço
+            res.status(200).json(contracts); // Retorna os contratos encontrados
+        } catch (error) {
+            res.status(500).json({ 
+                message: "Falha ao recuperar os contratos de um profile", 
+                error: (error as Error).message // Retorna o erro no caso de falha
+            });
+        }
+    }
+    
 }

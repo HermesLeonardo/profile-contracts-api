@@ -1,11 +1,12 @@
 import { Model, DataTypes, Sequelize, Optional } from "sequelize";
 
+// Interfaces de atributos do Job
 export interface JobAttributes {
   id: number;
   contractId: number;
   description: string;
   operationDate: Date;
-  paymentDate: Date;
+  paymentDate: Date | null; // Permite que paymentDate seja null
   price: number;
   paid: boolean;
 }
@@ -17,11 +18,12 @@ export class Job extends Model<JobAttributes, JobCreationAttributes> implements 
   public contractId!: number;
   public description!: string;
   public operationDate!: Date;
-  public paymentDate!: Date;
+  public paymentDate!: Date | null; // Permite que paymentDate seja null
   public price!: number;
   public paid!: boolean;
 }
 
+// Inicialização do modelo
 export function initializeJob(sequelize: Sequelize) {
   Job.init(
     {
@@ -44,7 +46,7 @@ export function initializeJob(sequelize: Sequelize) {
       },
       paymentDate: {
         type: DataTypes.DATE,
-        allowNull: true,
+        allowNull: true,  // Permite null para paymentDate
       },
       price: {
         type: DataTypes.DOUBLE,

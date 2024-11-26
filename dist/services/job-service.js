@@ -87,4 +87,21 @@ export class JobService {
             }
         });
     }
+    // Novo método para listar Jobs não pagos integralmente
+    getUnpaidJobs(contractId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                return yield this.jobRepository.findAll({
+                    where: { contractId, paid: false },
+                    include: [{ model: contractId, as: "contract" }]
+                });
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    throw new Error(`Failed to retrieve unpaid jobs for contract ID ${contractId}: ${error.message}`);
+                }
+                throw new Error("Unknown error occurred.");
+            }
+        });
+    }
 }

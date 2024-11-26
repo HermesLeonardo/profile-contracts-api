@@ -77,4 +77,17 @@ export class JobController {
             }
         });
     }
+    // Novo método para listar Jobs não pagos integralmente
+    getUnpaidJobs(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const contractId = Number(req.params.contractId);
+                const unpaidJobs = yield this.jobService.getUnpaidJobs(contractId);
+                res.status(200).json(unpaidJobs);
+            }
+            catch (error) {
+                res.status(500).json({ message: "Falha ao recuperar os jobs não pagos", error: error.message });
+            }
+        });
+    }
 }

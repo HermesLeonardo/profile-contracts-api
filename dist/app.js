@@ -14,6 +14,7 @@ import jobRoutes from "./routes/job-routes.js";
 import contractRoutes from "./routes/contract-routes.js";
 import depositRutes from "./routes/deposit-routes.js";
 import paymentRoutes from "./routes/payment-routes.js";
+import DatabaseSeederRoutes from "./routes/DatabaseSeeder-routes.js";
 import sequelize from "./shared/connection.js";
 import { initializeContratante } from "./models/contratante-models.js";
 import { initializeProfile } from "./models/profile-models.js";
@@ -32,12 +33,14 @@ const PORT = 3000;
 app.get("/", (req, res) => {
     res.status(200).send("Leonardo Node API - está usando ts");
 });
+// Definindo as rotas
 app.use("/contratante", contratanteRoutes);
 app.use("/profile", profileRoutes);
 app.use("/contract", contractRoutes);
 app.use("/job", jobRoutes);
 app.use("/deposit", depositRutes);
 app.use("/payment", paymentRoutes);
+app.use("/database", DatabaseSeederRoutes);
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield sequelize.authenticate();

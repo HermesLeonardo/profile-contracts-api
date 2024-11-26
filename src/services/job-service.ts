@@ -67,4 +67,19 @@ export class JobService {
             }
         }
     }
+
+     // Novo método para listar Jobs não pagos integralmente
+     public async getUnpaidJobs(contractId: number): Promise<Job[]> {
+        try {
+            return await this.jobRepository.findAll({
+                where: { contractId, paid: false },
+                include: [{ model: contractId, as: "contract" }]
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new Error(`Failed to retrieve unpaid jobs for contract ID ${contractId}: ${error.message}`);
+            }
+            throw new Error("Unknown error occurred.");
+        }
+    }
 }

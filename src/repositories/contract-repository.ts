@@ -13,13 +13,15 @@ export class ContractRepository {
     }
 
     // Encontrar todos os contratos
-    public async findAll(): Promise<Contract[]> {
-        try {
-            return await Contract.findAll();
-        } catch (error) {
-            throw new Error(`Impossível encontrar contratos: ${(error as Error).message}`);
-        }
+public async findAll(options?: { where?: { clientId?: number }; include?: { model: any; as: string }[] }): Promise<Contract[]> {
+    try {
+        // Usa as opções fornecidas ou um objeto vazio
+        return await Contract.findAll(options || {});
+    } catch (error) {
+        throw new Error(`Impossível encontrar contratos: ${(error as Error).message}`);
     }
+}
+
 
     // Encontrar contrato por ID
     public async findById(id: number): Promise<Contract | null> {

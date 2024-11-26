@@ -5,17 +5,17 @@ import jobRoutes from "./routes/job-routes.js";
 import contractRoutes from "./routes/contract-routes.js";
 import depositRutes from "./routes/deposit-routes.js";
 import paymentRoutes from "./routes/payment-routes.js";
+import DatabaseSeederRoutes from "./routes/DatabaseSeeder-routes.js";
 
 import sequelize from "./shared/connection.js";
 import { initializeContratante } from "./models/contratante-models.js";
-
 import { initializeProfile } from "./models/profile-models.js";
 import { initializeJob } from "./models/job-models.js";
 import { initializeContract } from "./models/contract-models.js";
 import { initializeDeposit } from "./models/deposit-models.js";
 import { initializePayment } from "./models/Payment-models.js";
 
-// Imports usados para a criação das tabelas se não houver
+// Importando modelos
 import { Contratante } from "./models/contratante-models.js";
 import { Profile } from "./models/profile-models.js";
 import { Job } from "./models/job-models.js";
@@ -31,12 +31,14 @@ app.get("/", (req, res) => {
     res.status(200).send("Leonardo Node API - está usando ts");
 });
 
+// Definindo as rotas
 app.use("/contratante", contratanteRoutes);
 app.use("/profile", profileRoutes);
 app.use("/contract", contractRoutes);
 app.use("/job", jobRoutes);
 app.use("/deposit", depositRutes);
 app.use("/payment", paymentRoutes);
+app.use("/database", DatabaseSeederRoutes);
 
 (async () => {
     try {
@@ -77,3 +79,4 @@ app.use("/payment", paymentRoutes);
 })();
 
 export default app;
+    

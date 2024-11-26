@@ -67,4 +67,15 @@ export class DepositService {
             }
         }
     }
+
+    public async makeDeposit(profileId: number, amount: number): Promise<Deposit> {
+        try {
+            return await this.depositRepository.create({ clientId: profileId, depositValue: amount, operationDate: new Date() });
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new Error(`Falha ao criar um deposito para o Profile de ID: ${profileId}: ${error.message}`);
+            }
+            throw new Error("Erro desconhecido.");
+        }
+    }
 }

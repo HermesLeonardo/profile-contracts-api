@@ -1,4 +1,5 @@
 import { Contract, ContractCreationAttributes } from "../models/contract-models.js";
+import { Profile } from "../models/profile-models.js";
 import { ContractRepository } from "../repositories/contract-repository.js";
 
 export class ContractService {
@@ -65,6 +66,28 @@ export class ContractService {
             } else {
                 throw new Error("Um erro desconhecido ocorreu ao tentar excluir o contrato.");
             }
+        }
+    }
+
+    // Método para buscar contratos de um perfil
+    public async getContractsByProfile(profileId: number): Promise<Contract[]> {
+        try {
+            // Consulta 1: Contratos onde o perfil é o cliente
+            const clientContracts = await this.contractRepository.findAll({
+                where: { clientId: profileId },
+                include: [{ model: Profile, as: "client" }]
+            });
+
+            // Consulta 2: Contratos onde o perfil é o contratante
+            const contractorContracts = await this.contractRepository.findAll({
+                where: { clientId: profileId },
+                include: [{ model: Profile, as: "contractor" }]
+            });
+
+            // Combinar os resultados das duas consultas
+            return [...clientContracts, ...contractorContracts];
+        } catch (error) {
+            throw new Error(`Falha ao recuperar os contratos para o Profile de ID ${profileId}: ${error}`);
         }
     }
 }

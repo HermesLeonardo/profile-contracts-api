@@ -19,7 +19,7 @@ export class ContractController {
                 res.status(201).json(newContract);
             }
             catch (error) {
-                res.status(500).json({ message: "Failed to create contract", error: error.message });
+                res.status(500).json({ message: "Falha ao criar os contratos", error: error.message });
             }
         });
     }
@@ -30,7 +30,7 @@ export class ContractController {
                 res.status(200).json(contracts);
             }
             catch (error) {
-                res.status(500).json({ message: "Failed to retrieve contracts", error: error.message });
+                res.status(500).json({ message: "Falha ao recuperar o contratos", error: error.message });
             }
         });
     }
@@ -42,11 +42,11 @@ export class ContractController {
                     res.status(200).json(contract);
                 }
                 else {
-                    res.status(404).json({ message: "Contract not found" });
+                    res.status(404).json({ message: "Contrato não encontrado" });
                 }
             }
             catch (error) {
-                res.status(500).json({ message: "Failed to retrieve contract", error: error.message });
+                res.status(500).json({ message: "Falha ao recuperar o contrato", error: error.message });
             }
         });
     }
@@ -58,11 +58,11 @@ export class ContractController {
                     res.status(200).json(updatedContract);
                 }
                 else {
-                    res.status(404).json({ message: "Contract not found" });
+                    res.status(404).json({ message: "Contrato não encontrado" });
                 }
             }
             catch (error) {
-                res.status(500).json({ message: "Failed to update contract", error: error.message });
+                res.status(500).json({ message: "Falha ao atualizar o contrato", error: error.message });
             }
         });
     }
@@ -73,7 +73,22 @@ export class ContractController {
                 res.status(204).send();
             }
             catch (error) {
-                res.status(500).json({ message: "Failed to delete contract", error: error.message });
+                res.status(500).json({ message: "Falha ao deletar o contrato", error: error.message });
+            }
+        });
+    }
+    getContractsByProfile(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const profileId = Number(req.params.profileId); // Obtém o ID do perfil da rota
+                const contracts = yield this.contractService.getContractsByProfile(profileId); // Chama o método no serviço
+                res.status(200).json(contracts); // Retorna os contratos encontrados
+            }
+            catch (error) {
+                res.status(500).json({
+                    message: "Falha ao recuperar os contratos de um profile",
+                    error: error.message // Retorna o erro no caso de falha
+                });
             }
         });
     }

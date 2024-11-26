@@ -19,7 +19,7 @@ export class DepositController {
                 res.status(201).json(newDeposit);
             }
             catch (error) {
-                res.status(500).json({ message: "Failed to create deposit", error: error.message });
+                res.status(500).json({ message: "Falha ao criar um deposito", error: error.message });
             }
         });
     }
@@ -30,7 +30,7 @@ export class DepositController {
                 res.status(200).json(deposits);
             }
             catch (error) {
-                res.status(500).json({ message: "Failed to retrieve deposits", error: error.message });
+                res.status(500).json({ message: "Falha ao recuperar depositos", error: error.message });
             }
         });
     }
@@ -42,11 +42,11 @@ export class DepositController {
                     res.status(200).json(deposit);
                 }
                 else {
-                    res.status(404).json({ message: "Deposit not found" });
+                    res.status(404).json({ message: "Deposito não encontrado" });
                 }
             }
             catch (error) {
-                res.status(500).json({ message: "Failed to retrieve deposit", error: error.message });
+                res.status(500).json({ message: "Falha ao recuperar o deposito", error: error.message });
             }
         });
     }
@@ -58,11 +58,11 @@ export class DepositController {
                     res.status(200).json(updatedDeposit);
                 }
                 else {
-                    res.status(404).json({ message: "Deposit not found" });
+                    res.status(404).json({ message: "Deposito não encontrado" });
                 }
             }
             catch (error) {
-                res.status(500).json({ message: "Failed to update deposit", error: error.message });
+                res.status(500).json({ message: "Falha ao atualizar o deposito", error: error.message });
             }
         });
     }
@@ -73,7 +73,21 @@ export class DepositController {
                 res.status(204).send();
             }
             catch (error) {
-                res.status(500).json({ message: "Failed to delete deposit", error: error.message });
+                res.status(500).json({ message: "falha ao excluir o deposito", error: error.message });
+            }
+        });
+    }
+    // Novo método para realizar depósito
+    makeDeposit(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const profileId = Number(req.params.profileId);
+                const amount = Number(req.body.amount);
+                const deposit = yield this.depositService.makeDeposit(profileId, amount);
+                res.status(201).json(deposit);
+            }
+            catch (error) {
+                res.status(500).json({ message: "falha ao fazer um deposito", error: error.message });
             }
         });
     }

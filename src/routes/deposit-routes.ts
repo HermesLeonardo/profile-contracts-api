@@ -10,4 +10,7 @@ router.get("/deposits/:id", (req, res) => depositController.getDepositById(req, 
 router.delete("/deposits/:id", (req, res) => depositController.deleteDeposit(req, res));
 router.put("/deposits/:id", (req, res) => depositController.updateDeposit(req, res));
 
+// Novo endpoint para realizar depósito "2. Realizar Deposit para Profile (0,5 ponto)" 
+router.post("/profile/:profileId", depositController.makeDeposit);
+
 export default router;

@@ -9,7 +9,7 @@ export class JobRepository {
     }
   }
 
-  public async findAll(): Promise<Job[]> {
+  public async findAll(p0?: { where: { contractId: number; paid: boolean; }; include: { model: number; as: string; }[]; }): Promise<Job[]> {
     try {
       return await Job.findAll();
     } catch (error) {

@@ -60,4 +60,15 @@ export class JobController {
             res.status(500).json({ message: "Failed to delete job", error: (error as Error).message });
         }
     }
+
+    // Novo método para listar Jobs não pagos integralmente
+    async getUnpaidJobs(req: Request, res: Response) {
+        try {
+            const contractId = Number(req.params.contractId);
+            const unpaidJobs = await this.jobService.getUnpaidJobs(contractId);
+            res.status(200).json(unpaidJobs);
+        } catch (error) {
+            res.status(500).json({ message: "Falha ao recuperar os jobs não pagos", error: (error as Error).message });
+        }
+    }
 }

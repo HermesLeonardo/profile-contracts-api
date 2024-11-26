@@ -22,10 +22,11 @@ export class ContractRepository {
         });
     }
     // Encontrar todos os contratos
-    findAll() {
+    findAll(options) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield Contract.findAll();
+                // Usa as opções fornecidas ou um objeto vazio
+                return yield Contract.findAll(options || {});
             }
             catch (error) {
                 throw new Error(`Impossível encontrar contratos: ${error.message}`);

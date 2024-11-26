@@ -1,6 +1,7 @@
 import { Model, DataTypes } from "sequelize";
 export class Job extends Model {
 }
+// Inicialização do modelo
 export function initializeJob(sequelize) {
     Job.init({
         id: {
@@ -22,7 +23,7 @@ export function initializeJob(sequelize) {
         },
         paymentDate: {
             type: DataTypes.DATE,
-            allowNull: true,
+            allowNull: true, // Permite null para paymentDate
         },
         price: {
             type: DataTypes.DOUBLE,
