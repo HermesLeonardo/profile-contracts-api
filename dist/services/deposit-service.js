@@ -8,24 +8,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { DepositRepository } from "../repositories/deposit-repository.js";
-import { ProfileService } from "./profile-service.js";
 export class DepositService {
     constructor() {
         this.depositRepository = new DepositRepository();
-        this.profileService = new ProfileService(); // Inicialize o ProfileService
     }
-    createDeposit(clientId, operationDate, depositValue) {
+    createDeposit(depositData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // Armazena o valor em centavos
-                const valueInCents = Math.round(depositValue * 100);
-                const deposit = yield this.depositRepository.create({ clientId, operationDate, depositValue: valueInCents });
-                // Atualize o saldo do Profile
-                yield this.profileService.updateBalance(clientId, valueInCents);
-                return deposit;
+                return yield this.depositRepository.create(depositData);
             }
             catch (error) {
-                throw new Error(`Impossível criar depósito: ${error.message}`);
+                if (error instanceof Error) {
+                    throw new Error(`Impossível criar depósito: ${error.message}`);
+                }
+                else {
+                    throw new Error("Um erro desconhecido ocorreu ao tentar criar o depósito.");
+                }
             }
         });
     }
@@ -35,27 +33,42 @@ export class DepositService {
                 return yield this.depositRepository.findAll();
             }
             catch (error) {
-                throw new Error(`Impossível encontrar depósitos: ${error.message}`);
+                if (error instanceof Error) {
+                    throw new Error(`Impossível encontrar depósitos: ${error.message}`);
+                }
+                else {
+                    throw new Error("Um erro desconhecido ocorreu ao tentar encontrar depósitos.");
+                }
             }
         });
     }
-    findById(id) {
+    getDepositById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 return yield this.depositRepository.findById(id);
             }
             catch (error) {
-                throw new Error(`Impossível encontrar depósito pelo ID ${id}: ${error.message}`);
+                if (error instanceof Error) {
+                    throw new Error(`Impossível encontrar depósito pelo ID ${id}: ${error.message}`);
+                }
+                else {
+                    throw new Error("Um erro desconhecido ocorreu ao tentar encontrar o depósito.");
+                }
             }
         });
     }
-    update(id, data) {
+    updateDeposit(id, updatedData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.depositRepository.update(id, data);
+                return yield this.depositRepository.update(id, updatedData);
             }
             catch (error) {
-                throw new Error(`Impossível atualizar depósito: ${error.message}`);
+                if (error instanceof Error) {
+                    throw new Error(`Impossível atualizar depósito com ID ${id}: ${error.message}`);
+                }
+                else {
+                    throw new Error("Um erro desconhecido ocorreu ao tentar atualizar o depósito.");
+                }
             }
         });
     }
@@ -65,7 +78,12 @@ export class DepositService {
                 yield this.depositRepository.delete(id);
             }
             catch (error) {
-                throw new Error(`Impossível excluir depósito com ID ${id}: ${error.message}`);
+                if (error instanceof Error) {
+                    throw new Error(`Impossível excluir depósito com ID ${id}: ${error.message}`);
+                }
+                else {
+                    throw new Error("Um erro desconhecido ocorreu ao tentar excluir o depósito.");
+                }
             }
         });
     }

@@ -21,7 +21,7 @@ export function initializeProfile(sequelize) {
             allowNull: false,
         },
         balance: {
-            type: DataTypes.DOUBLE,
+            type: DataTypes.FLOAT,
             allowNull: false,
             defaultValue: 0,
         },

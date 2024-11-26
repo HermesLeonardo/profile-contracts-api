@@ -1,5 +1,4 @@
 import { Model, DataTypes } from "sequelize";
-import { Contract } from "./contract-models.js";
 export class Job extends Model {
 }
 export function initializeJob(sequelize) {
@@ -12,13 +11,9 @@ export function initializeJob(sequelize) {
         contractId: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            references: {
-                model: Contract,
-                key: "id",
-            },
         },
         description: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(45),
             allowNull: false,
         },
         operationDate: {
@@ -37,10 +32,6 @@ export function initializeJob(sequelize) {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false,
-        },
-        profileId: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
         },
     }, {
         sequelize,

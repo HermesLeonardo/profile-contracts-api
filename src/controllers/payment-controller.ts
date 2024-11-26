@@ -8,67 +8,56 @@ export class PaymentController {
         this.paymentService = new PaymentService();
     }
 
-    public async createPayment(req: Request, res: Response): Promise<Response> {
+    async createPayment(req: Request, res: Response) {
         try {
-            const { jobId, operationDate, paymentValue, clientId } = req.body;
-            const newPayment = await this.paymentService.createPayment(jobId, operationDate, paymentValue, clientId);
-            return res.status(201).json(newPayment);
+            const newPayment = await this.paymentService.createPayment(req.body);
+            res.status(201).json(newPayment);
         } catch (error) {
-            return res.status(500).json({ message: "Falha ao criar pagamento", error: (error as Error).message });
+            res.status(500).json({ message: "Failed to create payment", error: (error as Error).message });
         }
     }
 
-    public async getAllPayments(req: Request, res: Response): Promise<Response> {
+    async getAllPayments(req: Request, res: Response) {
         try {
             const payments = await this.paymentService.getAllPayments();
-            if (payments.length === 0) {
-                return res.status(404).json({ message: "Nenhum pagamento encontrado." });
-            }
-            return res.status(200).json(payments);
+            res.status(200).json(payments);
         } catch (error) {
-            return res.status(500).json({ message: "Falha ao encontrar pagamentos", error });
+            res.status(500).json({ message: "Failed to retrieve payments", error: (error as Error).message });
         }
     }
 
-    public async getPaymentById(req: Request, res: Response): Promise<Response> {
-        const { id } = req.params;
+    async getPaymentById(req: Request, res: Response) {
         try {
-            const payment = await this.paymentService.findById(Number(id));
-            if (!payment) {
-                return res.status(404).json({ message: `Pagamento com ID ${id} não encontrado.` });
+            const payment = await this.paymentService.getPaymentById(Number(req.params.id));
+            if (payment) {
+                res.status(200).json(payment);
+            } else {
+                res.status(404).json({ message: "Payment not found" });
             }
-            return res.status(200).json(payment);
         } catch (error) {
-            return res.status(500).json({ message: `Erro ao buscar pagamento por ID`, error });
+            res.status(500).json({ message: "Failed to retrieve payment", error: (error as Error).message });
         }
     }
 
-    public async deletePayment(req: Request, res: Response): Promise<Response> {
-        const { id } = req.params;
+    async updatePayment(req: Request, res: Response) {
         try {
-            await this.paymentService.deletePayment(Number(id));
-            return res.status(200).json({ message: `Pagamento com ID ${id} foi excluído com sucesso.` });
+            const updatedPayment = await this.paymentService.updatePayment(Number(req.params.id), req.body);
+            if (updatedPayment) {
+                res.status(200).json(updatedPayment);
+            } else {
+                res.status(404).json({ message: "Payment not found" });
+            }
         } catch (error) {
-            return res.status(500).json({ message: "Falha ao excluir pagamento", error });
+            res.status(500).json({ message: "Failed to update payment", error: (error as Error).message });
         }
     }
 
-    public async updatePayment(req: Request, res: Response): Promise<Response> {
+    async deletePayment(req: Request, res: Response) {
         try {
-            const { id } = req.params; 
-            const { jobId, profileId, operationDate, paymentValue } = req.body; 
-            const updatedPayment = await this.paymentService.update(Number(id), { jobId, operationDate, paymentValue });
-
-            if (!updatedPayment) {
-                return res.status(404).json({ message: "Pagamento não encontrado" });
-            }
-
-            return res.status(200).json({ 
-                message: `Pagamento com ID ${id} foi atualizado com sucesso`,
-                payment: updatedPayment 
-            });
+            await this.paymentService.deletePayment(Number(req.params.id));
+            res.status(204).send();
         } catch (error) {
-            return res.status(500).json({ message: "Falha ao atualizar pagamento", error });
+            res.status(500).json({ message: "Failed to delete payment", error: (error as Error).message });
         }
     }
 }

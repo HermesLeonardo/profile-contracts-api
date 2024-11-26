@@ -8,95 +8,56 @@ export class ProfileController {
         this.profileService = new ProfileService();
     }
 
-    public async createProfile(req: Request, res: Response): Promise<Response> {
+    async createProfile(req: Request, res: Response) {
         try {
-            const { firstName, lastName, profession, balance, type } = req.body; // Mantenha as chaves corretas
-            const newProfile = await this.profileService.createProfile(firstName, lastName, profession, balance, type);
-    
-            return res.status(201).json(newProfile);
+            const newProfile = await this.profileService.createProfile(req.body);
+            res.status(201).json(newProfile);
         } catch (error) {
-            return res.status(500).json({ message: "Falha ao criar perfil", error: (error as Error).message });
+            res.status(500).json({ message: "Failed to create profile", error: (error as Error).message });
         }
     }
-    
-    
 
-    public async getAllProfiles(req: Request, res: Response): Promise<Response> {
+    async getAllProfiles(req: Request, res: Response) {
         try {
             const profiles = await this.profileService.getAllProfiles();
+            res.status(200).json(profiles);
+        } catch (error) {
+            res.status(500).json({ message: "Failed to retrieve profiles", error: (error as Error).message });
+        }
+    }
 
-            if (profiles.length === 0) {
-                return res.status(404).json({ message: "Nenhum perfil encontrado." });
+    async getProfileById(req: Request, res: Response) {
+        try {
+            const profile = await this.profileService.getProfileById(Number(req.params.id));
+            if (profile) {
+                res.status(200).json(profile);
+            } else {
+                res.status(404).json({ message: "Profile not found" });
             }
-
-            return res.status(200).json(profiles);
         } catch (error) {
-            return res.status(500).json({ message: "Falha ao encontrar os perfis", error });
+            res.status(500).json({ message: "Failed to retrieve profile", error: (error as Error).message });
         }
     }
 
-    public async getProfileById(req: Request, res: Response): Promise<Response> {
+    async updateProfile(req: Request, res: Response) {
         try {
-            const { id } = req.params;
-            const profile = await this.profileService.findById(Number(id));
-
-            if (!profile) {
-                return res.status(404).json({ message: `Perfil com ID ${id} não encontrado.` });
+            const updatedProfile = await this.profileService.updateProfile(Number(req.params.id), req.body);
+            if (updatedProfile) {
+                res.status(200).json(updatedProfile);
+            } else {
+                res.status(404).json({ message: "Profile not found" });
             }
-
-            return res.status(200).json(profile);
         } catch (error) {
-            return res.status(500).json({ message: `Erro ao buscar perfil por ID`, error });
+            res.status(500).json({ message: "Failed to update profile", error: (error as Error).message });
         }
     }
 
-    public async updateProfile(req: Request, res: Response): Promise<Response> {
+    async deleteProfile(req: Request, res: Response) {
         try {
-            const { id } = req.params;
-            const { firstName, lastName, profession, balance, type } = req.body;
-            
-            const updatedProfile = await this.profileService.updateProfile(Number(id), { firstName, lastName, profession, balance, type });
-    
-            if (!updatedProfile) {
-                return res.status(404).json({ message: "Perfil não encontrado" });
-            }
-
-            return res.status(200).json({ message: `Perfil com ID ${id} foi atualizado com sucesso`, profile: updatedProfile });
+            await this.profileService.deleteProfile(Number(req.params.id));
+            res.status(204).send();
         } catch (error) {
-            return res.status(500).json({ message: `Falha ao atualizar perfil`, error: (error as Error).message });
+            res.status(500).json({ message: "Failed to delete profile", error: (error as Error).message });
         }
     }
-
-    public async deleteProfile(req: Request, res: Response): Promise<Response> {
-        const { id } = req.params;
-        try {
-            await this.profileService.deleteProfile(Number(id));
-            return res.status(200).json({ message: `Perfil com ID ${id} foi excluído com sucesso.` });
-        } catch (error) {
-            return res.status(500).json({ message: "Falha ao excluir perfil", error: (error as Error).message });
-        }
-    }
-
-    public async getBalance(req: Request, res: Response): Promise<Response> {
-        const { profileId } = req.params; 
-        try {
-            const balance = await this.profileService.getBalance(Number(profileId)); 
-            return res.status(200).json({ balance });
-        } catch (error) {
-            return res.status(500).json({ message: "Erro ao verificar saldo", error });
-        }
-    }
-
-    public async getUnpaidJobsDetails(req: Request, res: Response): Promise<Response> {
-        const { profileId } = req.params; 
-        try {
-            const unpaidJobsDetails = await this.profileService.getUnpaidJobsDetails(Number(profileId)); 
-            return res.status(200).json(unpaidJobsDetails);
-        } catch (error) {
-            return res.status(500).json({ message: "Erro ao buscar detalhes dos jobs não pagos", error });
-        }
-    }
-    
-    
-    
 }

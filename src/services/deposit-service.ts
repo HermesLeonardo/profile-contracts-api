@@ -1,56 +1,58 @@
 import { Deposit, DepositCreationAttributes } from "../models/deposit-models.js";
 import { DepositRepository } from "../repositories/deposit-repository.js";
-import { ProfileService } from "./profile-service.js";
 
 export class DepositService {
     private depositRepository: DepositRepository;
-    private profileService: ProfileService; // Adicione ProfileService
-
 
     constructor() {
         this.depositRepository = new DepositRepository();
-        this.profileService = new ProfileService(); // Inicialize o ProfileService
-
     }
 
-    public async createDeposit(clientId: number, operationDate: Date, depositValue: number): Promise<Deposit> {
+    public async createDeposit(depositData: DepositCreationAttributes): Promise<Deposit> {
         try {
-            // Armazena o valor em centavos
-            const valueInCents = Math.round(depositValue * 100);
-            const deposit = await this.depositRepository.create({ clientId, operationDate, depositValue: valueInCents });
-
-            // Atualize o saldo do Profile
-            await this.profileService.updateBalance(clientId, valueInCents);
-
-            return deposit;
+            return await this.depositRepository.create(depositData);
         } catch (error) {
-            throw new Error(`Impossível criar depósito: ${(error as Error).message}`);
+            if (error instanceof Error) {
+                throw new Error(`Impossível criar depósito: ${error.message}`);
+            } else {
+                throw new Error("Um erro desconhecido ocorreu ao tentar criar o depósito.");
+            }
         }
     }
-
-    
 
     public async getAllDeposits(): Promise<Deposit[]> {
         try {
             return await this.depositRepository.findAll();
         } catch (error) {
-            throw new Error(`Impossível encontrar depósitos: ${(error as Error).message}`);
+            if (error instanceof Error) {
+                throw new Error(`Impossível encontrar depósitos: ${error.message}`);
+            } else {
+                throw new Error("Um erro desconhecido ocorreu ao tentar encontrar depósitos.");
+            }
         }
     }
 
-    public async findById(id: number): Promise<Deposit | null> {
+    public async getDepositById(id: number): Promise<Deposit | null> {
         try {
             return await this.depositRepository.findById(id);
         } catch (error) {
-            throw new Error(`Impossível encontrar depósito pelo ID ${id}: ${(error as Error).message}`);
+            if (error instanceof Error) {
+                throw new Error(`Impossível encontrar depósito pelo ID ${id}: ${error.message}`);
+            } else {
+                throw new Error("Um erro desconhecido ocorreu ao tentar encontrar o depósito.");
+            }
         }
     }
 
-    public async update(id: number, data: Partial<DepositCreationAttributes>): Promise<Deposit | null> {
+    public async updateDeposit(id: number, updatedData: Partial<DepositCreationAttributes>): Promise<Deposit | null> {
         try {
-            return await this.depositRepository.update(id, data);
+            return await this.depositRepository.update(id, updatedData);
         } catch (error) {
-            throw new Error(`Impossível atualizar depósito: ${(error as Error).message}`);
+            if (error instanceof Error) {
+                throw new Error(`Impossível atualizar depósito com ID ${id}: ${error.message}`);
+            } else {
+                throw new Error("Um erro desconhecido ocorreu ao tentar atualizar o depósito.");
+            }
         }
     }
 
@@ -58,7 +60,11 @@ export class DepositService {
         try {
             await this.depositRepository.delete(id);
         } catch (error) {
-            throw new Error(`Impossível excluir depósito com ID ${id}: ${(error as Error).message}`);
+            if (error instanceof Error) {
+                throw new Error(`Impossível excluir depósito com ID ${id}: ${error.message}`);
+            } else {
+                throw new Error("Um erro desconhecido ocorreu ao tentar excluir o depósito.");
+            }
         }
     }
 }

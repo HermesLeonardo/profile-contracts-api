@@ -15,11 +15,11 @@ export class JobController {
     createJob(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const job = yield this.jobService.createJob(req.body);
-                return res.status(201).json(job);
+                const newJob = yield this.jobService.createJob(req.body);
+                res.status(201).json(newJob);
             }
             catch (error) {
-                return res.status(500).json({ message: "Erro ao criar Job", error: error.message });
+                res.status(500).json({ message: "Failed to create job", error: error.message });
             }
         });
     }
@@ -27,65 +27,53 @@ export class JobController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const jobs = yield this.jobService.getAllJobs();
-                return res.status(200).json(jobs);
+                res.status(200).json(jobs);
             }
             catch (error) {
-                return res.status(500).json({ message: "Erro ao buscar Jobs", error: error.message });
+                res.status(500).json({ message: "Failed to retrieve jobs", error: error.message });
             }
         });
     }
     getJobById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { id } = req.params;
-                const job = yield this.jobService.getJobById(Number(id));
-                if (!job)
-                    return res.status(404).json({ message: "Job não encontrado" });
-                return res.status(200).json(job);
+                const job = yield this.jobService.getJobById(Number(req.params.id));
+                if (job) {
+                    res.status(200).json(job);
+                }
+                else {
+                    res.status(404).json({ message: "Job not found" });
+                }
             }
             catch (error) {
-                return res.status(500).json({ message: "Erro ao buscar Job", error: error.message });
+                res.status(500).json({ message: "Failed to retrieve job", error: error.message });
             }
         });
     }
     updateJob(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { id } = req.params;
-                const job = yield this.jobService.updateJob(Number(id), req.body);
-                if (!job)
-                    return res.status(404).json({ message: "Job não encontrado" });
-                return res.status(200).json(job);
+                const updatedJob = yield this.jobService.updateJob(Number(req.params.id), req.body);
+                if (updatedJob) {
+                    res.status(200).json(updatedJob);
+                }
+                else {
+                    res.status(404).json({ message: "Job not found" });
+                }
             }
             catch (error) {
-                return res.status(500).json({ message: "Erro ao atualizar Job", error: error.message });
+                res.status(500).json({ message: "Failed to update job", error: error.message });
             }
         });
     }
     deleteJob(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { id } = req.params;
-                yield this.jobService.deleteJob(Number(id));
-                return res.status(200).json({ message: "Job excluído com sucesso" });
+                yield this.jobService.deleteJob(Number(req.params.id));
+                res.status(204).send();
             }
             catch (error) {
-                return res.status(500).json({ message: "Erro ao excluir Job", error: error.message });
-            }
-        });
-    }
-    getJobsByContractId(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { contractId } = req.params; // Supondo que o ID do contrato é passado como parâmetro
-            try {
-                const jobs = yield this.jobService.getJobsByContractId(Number(contractId));
-                if (jobs.length === 0) {
-                    return res.status(404).json({ message: `Nenhum job encontrado para o contrato com ID ${contractId}.` });
-                }
-                return res.status(200).json(jobs);
-            }
-            catch (error) {
-                return res.status(500).json({ message: "Erro ao buscar jobs do contrato", error });
+                res.status(500).json({ message: "Failed to delete job", error: error.message });
             }
         });
     }

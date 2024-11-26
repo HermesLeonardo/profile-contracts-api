@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { ContractService } from "../services/contract-service.js"; 
+import { ContractService } from "../services/contract-service.js";
 
 export class ContractController {
-    private contractService: ContractService; // Declare a propriedade
+    private contractService: ContractService;
 
     constructor() {
         this.contractService = new ContractService();

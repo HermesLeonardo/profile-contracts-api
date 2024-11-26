@@ -15,12 +15,11 @@ export class PaymentController {
     createPayment(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { jobId, operationDate, paymentValue, clientId } = req.body;
-                const newPayment = yield this.paymentService.createPayment(jobId, operationDate, paymentValue, clientId);
-                return res.status(201).json(newPayment);
+                const newPayment = yield this.paymentService.createPayment(req.body);
+                res.status(201).json(newPayment);
             }
             catch (error) {
-                return res.status(500).json({ message: "Falha ao criar pagamento", error: error.message });
+                res.status(500).json({ message: "Failed to create payment", error: error.message });
             }
         });
     }
@@ -28,59 +27,53 @@ export class PaymentController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const payments = yield this.paymentService.getAllPayments();
-                if (payments.length === 0) {
-                    return res.status(404).json({ message: "Nenhum pagamento encontrado." });
-                }
-                return res.status(200).json(payments);
+                res.status(200).json(payments);
             }
             catch (error) {
-                return res.status(500).json({ message: "Falha ao encontrar pagamentos", error });
+                res.status(500).json({ message: "Failed to retrieve payments", error: error.message });
             }
         });
     }
     getPaymentById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id } = req.params;
             try {
-                const payment = yield this.paymentService.findById(Number(id));
-                if (!payment) {
-                    return res.status(404).json({ message: `Pagamento com ID ${id} não encontrado.` });
+                const payment = yield this.paymentService.getPaymentById(Number(req.params.id));
+                if (payment) {
+                    res.status(200).json(payment);
                 }
-                return res.status(200).json(payment);
+                else {
+                    res.status(404).json({ message: "Payment not found" });
+                }
             }
             catch (error) {
-                return res.status(500).json({ message: `Erro ao buscar pagamento por ID`, error });
-            }
-        });
-    }
-    deletePayment(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id } = req.params;
-            try {
-                yield this.paymentService.deletePayment(Number(id));
-                return res.status(200).json({ message: `Pagamento com ID ${id} foi excluído com sucesso.` });
-            }
-            catch (error) {
-                return res.status(500).json({ message: "Falha ao excluir pagamento", error });
+                res.status(500).json({ message: "Failed to retrieve payment", error: error.message });
             }
         });
     }
     updatePayment(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { id } = req.params;
-                const { jobId, profileId, operationDate, paymentValue } = req.body;
-                const updatedPayment = yield this.paymentService.update(Number(id), { jobId, operationDate, paymentValue });
-                if (!updatedPayment) {
-                    return res.status(404).json({ message: "Pagamento não encontrado" });
+                const updatedPayment = yield this.paymentService.updatePayment(Number(req.params.id), req.body);
+                if (updatedPayment) {
+                    res.status(200).json(updatedPayment);
                 }
-                return res.status(200).json({
-                    message: `Pagamento com ID ${id} foi atualizado com sucesso`,
-                    payment: updatedPayment
-                });
+                else {
+                    res.status(404).json({ message: "Payment not found" });
+                }
             }
             catch (error) {
-                return res.status(500).json({ message: "Falha ao atualizar pagamento", error });
+                res.status(500).json({ message: "Failed to update payment", error: error.message });
+            }
+        });
+    }
+    deletePayment(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield this.paymentService.deletePayment(Number(req.params.id));
+                res.status(204).send();
+            }
+            catch (error) {
+                res.status(500).json({ message: "Failed to delete payment", error: error.message });
             }
         });
     }

@@ -1,5 +1,4 @@
 import { Model, DataTypes } from "sequelize";
-import { Job } from "./job-models.js";
 export class Payment extends Model {
 }
 export function initializePayment(sequelize) {
@@ -12,10 +11,6 @@ export function initializePayment(sequelize) {
         jobId: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            references: {
-                model: Job,
-                key: "id",
-            },
         },
         operationDate: {
             type: DataTypes.DATE,
@@ -23,10 +18,6 @@ export function initializePayment(sequelize) {
         },
         paymentValue: {
             type: DataTypes.DOUBLE,
-            allowNull: false,
-        },
-        clientId: {
-            type: DataTypes.INTEGER,
             allowNull: false,
         },
     }, {

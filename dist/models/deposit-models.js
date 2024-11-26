@@ -1,5 +1,4 @@
 import { Model, DataTypes } from "sequelize";
-import { Profile } from "./profile-models.js";
 export class Deposit extends Model {
 }
 export function initializeDeposit(sequelize) {
@@ -12,10 +11,6 @@ export function initializeDeposit(sequelize) {
         clientId: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            references: {
-                model: Profile,
-                key: "id",
-            },
         },
         operationDate: {
             type: DataTypes.DATE,

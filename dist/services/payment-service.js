@@ -7,20 +7,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { Deposit } from "../models/deposit-models.js";
-import { Payment } from "../models/Payment-models.js";
 import { PaymentRepository } from "../repositories/payment-repository.js";
 export class PaymentService {
     constructor() {
         this.paymentRepository = new PaymentRepository();
     }
-    createPayment(jobId, operationDate, paymentValue, clientId) {
+    createPayment(paymentData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.paymentRepository.create({ jobId, operationDate, paymentValue, clientId });
+                return yield this.paymentRepository.create(paymentData);
             }
             catch (error) {
-                throw new Error(`Impossível criar pagamento: ${error.message}`);
+                if (error instanceof Error) {
+                    throw new Error(`Impossível criar pagamento: ${error.message}`);
+                }
+                else {
+                    throw new Error("Um erro desconhecido ocorreu ao tentar criar o pagamento.");
+                }
             }
         });
     }
@@ -30,27 +33,42 @@ export class PaymentService {
                 return yield this.paymentRepository.findAll();
             }
             catch (error) {
-                throw new Error(`Impossível encontrar pagamentos: ${error.message}`);
+                if (error instanceof Error) {
+                    throw new Error(`Impossível encontrar pagamentos: ${error.message}`);
+                }
+                else {
+                    throw new Error("Um erro desconhecido ocorreu ao tentar encontrar pagamentos.");
+                }
             }
         });
     }
-    findById(id) {
+    getPaymentById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 return yield this.paymentRepository.findById(id);
             }
             catch (error) {
-                throw new Error(`Impossível encontrar pagamento pelo ID ${id}: ${error.message}`);
+                if (error instanceof Error) {
+                    throw new Error(`Impossível encontrar pagamento pelo ID ${id}: ${error.message}`);
+                }
+                else {
+                    throw new Error("Um erro desconhecido ocorreu ao tentar encontrar o pagamento.");
+                }
             }
         });
     }
-    update(id, data) {
+    updatePayment(id, updatedData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.paymentRepository.update(id, data);
+                return yield this.paymentRepository.update(id, updatedData);
             }
             catch (error) {
-                throw new Error(`Impossível atualizar pagamento: ${error.message}`);
+                if (error instanceof Error) {
+                    throw new Error(`Impossível atualizar pagamento com ID ${id}: ${error.message}`);
+                }
+                else {
+                    throw new Error("Um erro desconhecido ocorreu ao tentar atualizar o pagamento.");
+                }
             }
         });
     }
@@ -60,23 +78,12 @@ export class PaymentService {
                 yield this.paymentRepository.delete(id);
             }
             catch (error) {
-                throw new Error(`Impossível excluir pagamento com ID ${id}: ${error.message}`);
-            }
-        });
-    }
-    getBalance(profileId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const totalPayments = (yield Payment.sum('paymentValue', {
-                    where: { clientId: profileId },
-                })) || 0; // Se não houver pagamentos, considerar 0
-                const totalDeposits = (yield Deposit.sum('depositValue', {
-                    where: { clientId: profileId },
-                })) || 0; // Se não houver depósitos, considerar 0
-                return totalDeposits - totalPayments; // Retorna o saldo
-            }
-            catch (error) {
-                throw new Error(`Erro ao calcular saldo: ${error.message}`);
+                if (error instanceof Error) {
+                    throw new Error(`Impossível excluir pagamento com ID ${id}: ${error.message}`);
+                }
+                else {
+                    throw new Error("Um erro desconhecido ocorreu ao tentar excluir o pagamento.");
+                }
             }
         });
     }

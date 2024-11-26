@@ -5,7 +5,7 @@ export interface ProfileAttributes {
   firstName: string;
   lastName: string;
   profession: string;
-  balance: number;
+  balance: number;       
   type: string;
 }
 
@@ -42,7 +42,7 @@ export function initializeProfile(sequelize: Sequelize) {
         allowNull: false,
       },
       balance: {
-        type: DataTypes.DOUBLE,
+        type: DataTypes.FLOAT,
         allowNull: false,
         defaultValue: 0,
       },

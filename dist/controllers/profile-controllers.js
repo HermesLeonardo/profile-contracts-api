@@ -15,12 +15,11 @@ export class ProfileController {
     createProfile(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { firstName, lastName, profession, balance, type } = req.body; // Mantenha as chaves corretas
-                const newProfile = yield this.profileService.createProfile(firstName, lastName, profession, balance, type);
-                return res.status(201).json(newProfile);
+                const newProfile = yield this.profileService.createProfile(req.body);
+                res.status(201).json(newProfile);
             }
             catch (error) {
-                return res.status(500).json({ message: "Falha ao criar perfil", error: error.message });
+                res.status(500).json({ message: "Failed to create profile", error: error.message });
             }
         });
     }
@@ -28,80 +27,53 @@ export class ProfileController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const profiles = yield this.profileService.getAllProfiles();
-                if (profiles.length === 0) {
-                    return res.status(404).json({ message: "Nenhum perfil encontrado." });
-                }
-                return res.status(200).json(profiles);
+                res.status(200).json(profiles);
             }
             catch (error) {
-                return res.status(500).json({ message: "Falha ao encontrar os perfis", error });
+                res.status(500).json({ message: "Failed to retrieve profiles", error: error.message });
             }
         });
     }
     getProfileById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { id } = req.params;
-                const profile = yield this.profileService.findById(Number(id));
-                if (!profile) {
-                    return res.status(404).json({ message: `Perfil com ID ${id} não encontrado.` });
+                const profile = yield this.profileService.getProfileById(Number(req.params.id));
+                if (profile) {
+                    res.status(200).json(profile);
                 }
-                return res.status(200).json(profile);
+                else {
+                    res.status(404).json({ message: "Profile not found" });
+                }
             }
             catch (error) {
-                return res.status(500).json({ message: `Erro ao buscar perfil por ID`, error });
+                res.status(500).json({ message: "Failed to retrieve profile", error: error.message });
             }
         });
     }
     updateProfile(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { id } = req.params;
-                const { firstName, lastName, profession, balance, type } = req.body;
-                const updatedProfile = yield this.profileService.updateProfile(Number(id), { firstName, lastName, profession, balance, type });
-                if (!updatedProfile) {
-                    return res.status(404).json({ message: "Perfil não encontrado" });
+                const updatedProfile = yield this.profileService.updateProfile(Number(req.params.id), req.body);
+                if (updatedProfile) {
+                    res.status(200).json(updatedProfile);
                 }
-                return res.status(200).json({ message: `Perfil com ID ${id} foi atualizado com sucesso`, profile: updatedProfile });
+                else {
+                    res.status(404).json({ message: "Profile not found" });
+                }
             }
             catch (error) {
-                return res.status(500).json({ message: `Falha ao atualizar perfil`, error: error.message });
+                res.status(500).json({ message: "Failed to update profile", error: error.message });
             }
         });
     }
     deleteProfile(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id } = req.params;
             try {
-                yield this.profileService.deleteProfile(Number(id));
-                return res.status(200).json({ message: `Perfil com ID ${id} foi excluído com sucesso.` });
+                yield this.profileService.deleteProfile(Number(req.params.id));
+                res.status(204).send();
             }
             catch (error) {
-                return res.status(500).json({ message: "Falha ao excluir perfil", error: error.message });
-            }
-        });
-    }
-    getBalance(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { profileId } = req.params;
-            try {
-                const balance = yield this.profileService.getBalance(Number(profileId));
-                return res.status(200).json({ balance });
-            }
-            catch (error) {
-                return res.status(500).json({ message: "Erro ao verificar saldo", error });
-            }
-        });
-    }
-    getUnpaidJobsDetails(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { profileId } = req.params;
-            try {
-                const unpaidJobsDetails = yield this.profileService.getUnpaidJobsDetails(Number(profileId));
-                return res.status(200).json(unpaidJobsDetails);
-            }
-            catch (error) {
-                return res.status(500).json({ message: "Erro ao buscar detalhes dos jobs não pagos", error });
+                res.status(500).json({ message: "Failed to delete profile", error: error.message });
             }
         });
     }

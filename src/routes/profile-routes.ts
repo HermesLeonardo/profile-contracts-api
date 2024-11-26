@@ -11,11 +11,5 @@ router.put("/profiles/:id", (req, res) => profileController.updateProfile(req, r
 router.delete("/profiles/:id", (req, res) => profileController.deleteProfile(req, res));
 
 
-// Rotas referente aos objetivos 
-
-router.get("/:profileId/jobs-nao-pagos", (req, res) => profileController.getUnpaidJobsDetails(req, res));
-router.get("/:profileId/balance", (req, res) => profileController.getBalance(req, res));
-
-
 
 export default router;

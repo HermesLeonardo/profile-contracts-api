@@ -8,72 +8,56 @@ export class DepositController {
         this.depositService = new DepositService();
     }
 
-    public async createDeposit(req: Request, res: Response): Promise<Response> {
+    async createDeposit(req: Request, res: Response) {
         try {
-            const { clientId, operationDate, depositValue } = req.body;
-
-            if (depositValue < 0) {
-                return res.status(400).json({ message: "Valor de depósito não pode ser negativo." });
-            }
-
-            const newDeposit = await this.depositService.createDeposit(clientId, operationDate, depositValue);
-            return res.status(201).json(newDeposit);
+            const newDeposit = await this.depositService.createDeposit(req.body);
+            res.status(201).json(newDeposit);
         } catch (error) {
-            return res.status(500).json({ message: "Falha ao criar depósito", error: (error as Error).message });
+            res.status(500).json({ message: "Failed to create deposit", error: (error as Error).message });
         }
     }
 
-    public async getAllDeposits(req: Request, res: Response): Promise<Response> {
+    async getAllDeposits(req: Request, res: Response) {
         try {
             const deposits = await this.depositService.getAllDeposits();
-            if (deposits.length === 0) {
-                return res.status(404).json({ message: "Nenhum depósito encontrado." });
-            }
-            return res.status(200).json(deposits);
+            res.status(200).json(deposits);
         } catch (error) {
-            return res.status(500).json({ message: "Falha ao encontrar depósitos", error });
+            res.status(500).json({ message: "Failed to retrieve deposits", error: (error as Error).message });
         }
     }
 
-    public async getDepositById(req: Request, res: Response): Promise<Response> {
-        const { id } = req.params;
+    async getDepositById(req: Request, res: Response) {
         try {
-            const deposit = await this.depositService.findById(Number(id));
-            if (!deposit) {
-                return res.status(404).json({ message: `Depósito com ID ${id} não encontrado.` });
+            const deposit = await this.depositService.getDepositById(Number(req.params.id));
+            if (deposit) {
+                res.status(200).json(deposit);
+            } else {
+                res.status(404).json({ message: "Deposit not found" });
             }
-            return res.status(200).json(deposit);
         } catch (error) {
-            return res.status(500).json({ message: `Erro ao buscar depósito por ID`, error });
+            res.status(500).json({ message: "Failed to retrieve deposit", error: (error as Error).message });
         }
     }
 
-    public async deleteDeposit(req: Request, res: Response): Promise<Response> {
-        const { id } = req.params;
+    async updateDeposit(req: Request, res: Response) {
         try {
-            await this.depositService.deleteDeposit(Number(id));
-            return res.status(200).json({ message: `Depósito com ID ${id} foi excluído com sucesso.` });
+            const updatedDeposit = await this.depositService.updateDeposit(Number(req.params.id), req.body);
+            if (updatedDeposit) {
+                res.status(200).json(updatedDeposit);
+            } else {
+                res.status(404).json({ message: "Deposit not found" });
+            }
         } catch (error) {
-            return res.status(500).json({ message: "Falha ao excluir depósito", error });
+            res.status(500).json({ message: "Failed to update deposit", error: (error as Error).message });
         }
     }
 
-    public async updateDeposit(req: Request, res: Response): Promise<Response> {
+    async deleteDeposit(req: Request, res: Response) {
         try {
-            const { id } = req.params; 
-            const { clientId, operationDate, depositValue } = req.body; 
-            const updatedDeposit = await this.depositService.update(Number(id), { clientId, operationDate, depositValue });
-
-            if (!updatedDeposit) {
-                return res.status(404).json({ message: "Depósito não encontrado" });
-            }
-
-            return res.status(200).json({ 
-                message: `Depósito com ID ${id} foi atualizado com sucesso`,
-                deposit: updatedDeposit 
-            });
+            await this.depositService.deleteDeposit(Number(req.params.id));
+            res.status(204).send();
         } catch (error) {
-            return res.status(500).json({ message: "Falha ao atualizar depósito", error });
+            res.status(500).json({ message: "Failed to delete deposit", error: (error as Error).message });
         }
     }
 }

@@ -23,6 +23,8 @@ import { initializeDeposit } from "./models/deposit-models.js";
 import { initializePayment } from "./models/Payment-models.js";
 import { Profile } from "./models/profile-models.js";
 import { Job } from "./models/job-models.js";
+import { Contract } from "./models/contract-models.js";
+import { Deposit } from "./models/deposit-models.js";
 import { Payment } from "./models/Payment-models.js";
 const app = express();
 app.use(express.json());
@@ -46,14 +48,17 @@ app.use("/payment", paymentRoutes);
         initializeDeposit(sequelize);
         initializePayment(sequelize);
         initializeContratante(sequelize);
-        // Realizando as associações entre os modelos
-        // Exemplo de associação entre Job e Payment
-        Payment.belongsTo(Job, { foreignKey: "jobId" });
-        Job.hasMany(Payment, { foreignKey: "jobId" });
-        // Outras associações que você tem
-        // Por exemplo:
-        Profile.hasMany(Job, { foreignKey: "profileId" });
-        Job.belongsTo(Profile, { foreignKey: "profileId" });
+        // Relacionamentos entre os modelos
+        Profile.hasMany(Contract, { foreignKey: "clientId", as: "clientContracts" });
+        Profile.hasMany(Contract, { foreignKey: "contractorId", as: "contractorContracts" });
+        Contract.belongsTo(Profile, { foreignKey: "clientId", as: "client" });
+        Contract.belongsTo(Profile, { foreignKey: "contractorId", as: "contractor" });
+        Contract.hasMany(Job, { foreignKey: "contractId", as: "jobs" });
+        Job.belongsTo(Contract, { foreignKey: "contractId", as: "contract" });
+        Profile.hasMany(Deposit, { foreignKey: "clientId", as: "deposits" });
+        Deposit.belongsTo(Profile, { foreignKey: "clientId", as: "client" });
+        Job.hasMany(Payment, { foreignKey: "jobId", as: "payments" });
+        Payment.belongsTo(Job, { foreignKey: "jobId", as: "job" });
         yield sequelize.sync();
         console.log("Models estão sincronizados com o database");
         app.listen(PORT, () => {

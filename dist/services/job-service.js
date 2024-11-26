@@ -7,20 +7,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { Job } from "../models/job-models.js";
+import { JobRepository } from "../repositories/job-repository.js";
 export class JobService {
-    createJob(data) {
+    constructor() {
+        this.jobRepository = new JobRepository();
+    }
+    createJob(jobData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const job = yield Job.create(data);
-                return job;
+                return yield this.jobRepository.create(jobData);
             }
             catch (error) {
                 if (error instanceof Error) {
-                    throw new Error(`Impossível criar Job: ${error.message}`);
+                    throw new Error(`Impossível criar trabalho: ${error.message}`);
                 }
                 else {
-                    throw new Error("Um erro desconhecido ocorreu ao criar o Job.");
+                    throw new Error("Um erro desconhecido ocorreu ao tentar criar o trabalho.");
                 }
             }
         });
@@ -28,14 +30,14 @@ export class JobService {
     getAllJobs() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield Job.findAll();
+                return yield this.jobRepository.findAll();
             }
             catch (error) {
                 if (error instanceof Error) {
-                    throw new Error(`Impossível encontrar jobs: ${error.message}`);
+                    throw new Error(`Impossível encontrar trabalhos: ${error.message}`);
                 }
                 else {
-                    throw new Error("Um erro desconhecido ocorreu ao buscar os jobs.");
+                    throw new Error("Um erro desconhecido ocorreu ao tentar encontrar trabalhos.");
                 }
             }
         });
@@ -43,35 +45,29 @@ export class JobService {
     getJobById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const job = yield Job.findByPk(id);
-                if (!job) {
-                    throw new Error(`Job com ID ${id} não encontrado`);
-                }
-                return job;
-            }
-            catch (error) {
-                throw new Error(`Impossível encontrar job pelo ID ${id}: ${error.message}`);
-            }
-        });
-    }
-    updateJob(id, data) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const [numberOfAffectedRows, [updatedJob]] = yield Job.update(data, {
-                    where: { id },
-                    returning: true,
-                });
-                if (numberOfAffectedRows === 0) {
-                    return null;
-                }
-                return updatedJob;
+                return yield this.jobRepository.findById(id);
             }
             catch (error) {
                 if (error instanceof Error) {
-                    throw new Error(`Impossível atualizar job: ${error.message}`);
+                    throw new Error(`Impossível encontrar trabalho pelo ID ${id}: ${error.message}`);
                 }
                 else {
-                    throw new Error("Um erro desconhecido ocorreu ao tentar atualizar o job.");
+                    throw new Error("Um erro desconhecido ocorreu ao tentar encontrar o trabalho.");
+                }
+            }
+        });
+    }
+    updateJob(id, updatedData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                return yield this.jobRepository.update(id, updatedData);
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    throw new Error(`Impossível atualizar trabalho com ID ${id}: ${error.message}`);
+                }
+                else {
+                    throw new Error("Um erro desconhecido ocorreu ao tentar atualizar o trabalho.");
                 }
             }
         });
@@ -79,27 +75,15 @@ export class JobService {
     deleteJob(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield Job.destroy({
-                    where: { id },
-                });
-                if (result === 0) {
-                    throw new Error(`Job com ID ${id} não encontrado`);
+                yield this.jobRepository.delete(id);
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    throw new Error(`Impossível excluir trabalho com ID ${id}: ${error.message}`);
                 }
-            }
-            catch (error) {
-                throw new Error(`Impossível excluir job com ID ${id}: ${error.message}`);
-            }
-        });
-    }
-    getJobsByContractId(contractId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return yield Job.findAll({
-                    where: { contractId }
-                });
-            }
-            catch (error) {
-                throw new Error(`Impossível encontrar jobs para o contrato com ID ${contractId}: ${error.message}`);
+                else {
+                    throw new Error("Um erro desconhecido ocorreu ao tentar excluir o trabalho.");
+                }
             }
         });
     }
