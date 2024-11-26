@@ -1,10 +1,8 @@
 import { Sequelize } from "sequelize";
+// Configurando o Sequelize para SQLite
 const sequelize = new Sequelize({
-    dialect: "mysql",
-    database: "",
-    username: "root",
-    password: "",
-    host: "localhost",
-    port: 3306,
+    dialect: "sqlite",
+    storage: "./src/database/database.sqlite",
+    logging: false,
 });
 export default sequelize;
