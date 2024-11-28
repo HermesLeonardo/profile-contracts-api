@@ -80,14 +80,14 @@ export class ContractController {
     getContractsByProfile(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const profileId = Number(req.params.profileId); // Obtém o ID do perfil da rota
-                const contracts = yield this.contractService.getContractsByProfile(profileId); // Chama o método no serviço
-                res.status(200).json(contracts); // Retorna os contratos encontrados
+                const profileId = Number(req.params.profileId);
+                const result = yield this.contractService.getContractsByProfile(profileId);
+                res.status(200).json(result);
             }
             catch (error) {
                 res.status(500).json({
                     message: "Falha ao recuperar os contratos de um profile",
-                    error: error.message // Retorna o erro no caso de falha
+                    error: error.message
                 });
             }
         });

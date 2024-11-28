@@ -1,4 +1,6 @@
 import { Job, JobCreationAttributes } from "../models/job-models.js";
+import { Payment } from "../models/Payment-models.js";
+
 
 export class JobRepository {
   public async create(data: JobCreationAttributes): Promise<Job> {
@@ -45,4 +47,31 @@ export class JobRepository {
       throw new Error(`Erro ao excluir Job com ID ${id}: ${(error as Error).message}`);
     }
   }
+
+  public async findAllUnpaidJobsByContract(contractId: number): Promise<Job[]> {
+    try {
+        
+        const jobs = await Job.findAll({
+            where: { contractId }, 
+            include: [{ model: Payment, as: "payments" }] 
+        });
+
+        for (const job of jobs) {
+            const totalPaid = job.payments?.reduce((sum, payment) => sum + payment.paymentValue, 0) || 0;
+
+            if (totalPaid >= job.price && !job.paid) {
+                job.paid = true;
+                await job.save(); 
+            }
+        }
+
+        // Retorna apenas os jobs onde paid é false
+        return jobs.filter((job) => !job.paid);
+    } catch (error) {
+        throw new Error(`Erro ao buscar Jobs não pagos para o contrato ${contractId}: ${(error as Error).message}`);
+    }
+}
+
+
+
 }

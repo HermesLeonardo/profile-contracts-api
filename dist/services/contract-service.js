@@ -7,8 +7,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { Contract } from "../models/contract-models.js";
 import { Profile } from "../models/profile-models.js";
 import { ContractRepository } from "../repositories/contract-repository.js";
+import { Op } from "sequelize";
 export class ContractService {
     constructor() {
         this.contractRepository = new ContractRepository();
@@ -92,21 +94,31 @@ export class ContractService {
     getContractsByProfile(profileId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // Consulta 1: Contratos onde o perfil é o cliente
-                const clientContracts = yield this.contractRepository.findAll({
-                    where: { clientId: profileId },
-                    include: [{ model: Profile, as: "client" }]
+                const profile = yield Profile.findByPk(profileId, {
+                    attributes: ["id", "firstName"]
                 });
-                // Consulta 2: Contratos onde o perfil é o contratante
-                const contractorContracts = yield this.contractRepository.findAll({
-                    where: { clientId: profileId },
-                    include: [{ model: Profile, as: "contractor" }]
+                if (!profile) {
+                    throw new Error(`Profile com ID ${profileId} não encontrado.`);
+                }
+                const contracts = yield Contract.findAll({
+                    where: {
+                        [Op.or]: [
+                            { clientId: profileId },
+                            { contractorId: profileId }
+                        ]
+                    },
+                    attributes: ["id", "terms", "clientId", "contractorId", "operationDate", "status"]
                 });
-                // Combinar os resultados das duas consultas
-                return [...clientContracts, ...contractorContracts];
+                return {
+                    profile: {
+                        id: profile.id,
+                        firstName: profile.firstName
+                    },
+                    contracts
+                };
             }
             catch (error) {
-                throw new Error(`Falha ao recuperar os contratos para o Profile de ID ${profileId}: ${error}`);
+                throw new Error(`Falha ao recuperar contratos para o Profile de ID ${profileId}: ${error}`);
             }
         });
     }
