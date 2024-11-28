@@ -11,7 +11,7 @@ router.put("/contracts/:id", (req, res) => contractController.updateContract(req
 router.delete("/contracts/:id", (req, res) => contractController.deleteContract(req, res));
 
 
-// Novo endpoint para listar Contracts de um Profile "1. Listar todos os Contract de um determinado Profile (0,5 ponto)"
-router.get("/profile/:profileId", contractController.getContractsByProfile);
+// 1. Listar todos os Contract de um determinado Profile "
+router.get("/profile/:profileId", (req, res) => contractController.getContractsByProfile(req, res));
 
 export default router;

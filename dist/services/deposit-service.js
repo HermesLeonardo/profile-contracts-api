@@ -7,7 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { Deposit } from "../models/deposit-models.js";
 import { DepositRepository } from "../repositories/deposit-repository.js";
+import { Profile } from "../models/profile-models.js";
 export class DepositService {
     constructor() {
         this.depositRepository = new DepositRepository();
@@ -87,16 +89,31 @@ export class DepositService {
             }
         });
     }
-    makeDeposit(profileId, amount) {
+    makeDeposit(profileId, depositValue) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.depositRepository.create({ clientId: profileId, depositValue: amount, operationDate: new Date() });
+                const profile = yield Profile.findByPk(profileId);
+                if (!profile) {
+                    throw new Error(`Perfil com ID ${profileId} não encontrado.`);
+                }
+                const deposit = yield Deposit.create({
+                    clientId: profileId,
+                    depositValue: depositValue,
+                    operationDate: new Date(),
+                });
+                profile.balance += depositValue;
+                yield profile.save();
+                return {
+                    message: "Depósito realizado com sucesso.",
+                    deposit,
+                    updatedProfile: {
+                        id: profile.id,
+                        balance: profile.balance,
+                    },
+                };
             }
             catch (error) {
-                if (error instanceof Error) {
-                    throw new Error(`Falha ao criar um deposito para o Profile de ID: ${profileId}: ${error.message}`);
-                }
-                throw new Error("Erro desconhecido.");
+                throw new Error(`Falha ao realizar o depósito: ${error}`);
             }
         });
     }

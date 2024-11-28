@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Job } from "../models/job-models.js";
+import { Payment } from "../models/Payment-models.js";
 export class JobRepository {
     create(data) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -62,6 +63,29 @@ export class JobRepository {
             }
             catch (error) {
                 throw new Error(`Erro ao excluir Job com ID ${id}: ${error.message}`);
+            }
+        });
+    }
+    findAllUnpaidJobsByContract(contractId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const jobs = yield Job.findAll({
+                    where: { contractId },
+                    include: [{ model: Payment, as: "payments" }]
+                });
+                for (const job of jobs) {
+                    const totalPaid = ((_a = job.payments) === null || _a === void 0 ? void 0 : _a.reduce((sum, payment) => sum + payment.paymentValue, 0)) || 0;
+                    if (totalPaid >= job.price && !job.paid) {
+                        job.paid = true;
+                        yield job.save();
+                    }
+                }
+                // Retorna apenas os jobs onde paid é false
+                return jobs.filter((job) => !job.paid);
+            }
+            catch (error) {
+                throw new Error(`Erro ao buscar Jobs não pagos para o contrato ${contractId}: ${error.message}`);
             }
         });
     }

@@ -64,11 +64,14 @@ export class JobController {
     // Novo método para listar Jobs não pagos integralmente
     async getUnpaidJobs(req: Request, res: Response) {
         try {
-            const contractId = Number(req.params.contractId);
-            const unpaidJobs = await this.jobService.getUnpaidJobs(contractId);
-            res.status(200).json(unpaidJobs);
+            const contractId = Number(req.params.contractId); // Obtém o ID do contrato da rota
+            const unpaidJobs = await this.jobService.getUnpaidJobs(contractId); // Chama o serviço para obter os jobs
+            res.status(200).json(unpaidJobs); // Retorna os jobs não pagos
         } catch (error) {
-            res.status(500).json({ message: "Falha ao recuperar os jobs não pagos", error: (error as Error).message });
+            res.status(500).json({ 
+                message: "Falha ao recuperar jobs não pagos integralmente", 
+                error: (error as Error).message // Retorna o erro caso ocorra algum problema
+            });
         }
     }
 }

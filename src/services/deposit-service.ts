@@ -1,5 +1,6 @@
 import { Deposit, DepositCreationAttributes } from "../models/deposit-models.js";
 import { DepositRepository } from "../repositories/deposit-repository.js";
+import { Profile } from "../models/profile-models.js";
 
 export class DepositService {
     private depositRepository: DepositRepository;
@@ -68,14 +69,32 @@ export class DepositService {
         }
     }
 
-    public async makeDeposit(profileId: number, amount: number): Promise<Deposit> {
+    public async makeDeposit(profileId: number, depositValue: number): Promise<any> {
         try {
-            return await this.depositRepository.create({ clientId: profileId, depositValue: amount, operationDate: new Date() });
-        } catch (error) {
-            if (error instanceof Error) {
-                throw new Error(`Falha ao criar um deposito para o Profile de ID: ${profileId}: ${error.message}`);
+            const profile = await Profile.findByPk(profileId);
+            if (!profile) {
+                throw new Error(`Perfil com ID ${profileId} não encontrado.`);
             }
-            throw new Error("Erro desconhecido.");
+
+            const deposit = await Deposit.create({
+                clientId: profileId,
+                depositValue: depositValue,
+                operationDate: new Date(), 
+            });
+
+            profile.balance += depositValue;
+            await profile.save(); 
+
+            return {
+                message: "Depósito realizado com sucesso.",
+                deposit,
+                updatedProfile: {
+                    id: profile.id,
+                    balance: profile.balance, 
+                },
+            };
+        } catch (error) {
+            throw new Error(`Falha ao realizar o depósito: ${error}`);
         }
     }
 }

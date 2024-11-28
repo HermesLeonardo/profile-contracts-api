@@ -11,6 +11,8 @@ import { DepositService } from "../services/deposit-service.js";
 export class DepositController {
     constructor() {
         this.depositService = new DepositService();
+        // Vincular o contexto correto aos métodos
+        this.makeDeposit = this.makeDeposit.bind(this);
     }
     createDeposit(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -81,13 +83,19 @@ export class DepositController {
     makeDeposit(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const profileId = Number(req.params.profileId);
-                const amount = Number(req.body.amount);
-                const deposit = yield this.depositService.makeDeposit(profileId, amount);
-                res.status(201).json(deposit);
+                const profileId = Number(req.params.profileId); // Extrai o profileId da URL
+                const { depositValue } = req.body; // Obtém o valor do depósito do corpo da requisição
+                if (!depositValue || depositValue <= 0) {
+                    return res.status(400).json({ message: "O valor do depósito deve ser maior que zero." });
+                }
+                const result = yield this.depositService.makeDeposit(profileId, depositValue); // Chama o serviço
+                res.status(201).json(result);
             }
             catch (error) {
-                res.status(500).json({ message: "falha ao fazer um deposito", error: error.message });
+                res.status(500).json({
+                    message: "falha ao fazer um deposito",
+                    error: error.message,
+                });
             }
         });
     }

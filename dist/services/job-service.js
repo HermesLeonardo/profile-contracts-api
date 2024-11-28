@@ -91,16 +91,12 @@ export class JobService {
     getUnpaidJobs(contractId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.jobRepository.findAll({
-                    where: { contractId, paid: false },
-                    include: [{ model: contractId, as: "contract" }]
-                });
+                // Usando o método do repositório para buscar jobs não pagos
+                const unpaidJobs = yield this.jobRepository.findAllUnpaidJobsByContract(contractId);
+                return unpaidJobs;
             }
             catch (error) {
-                if (error instanceof Error) {
-                    throw new Error(`Failed to retrieve unpaid jobs for contract ID ${contractId}: ${error.message}`);
-                }
-                throw new Error("Unknown error occurred.");
+                throw new Error(`Falha ao recuperar jobs não pagos para o contrato ${contractId}: ${error}`);
             }
         });
     }

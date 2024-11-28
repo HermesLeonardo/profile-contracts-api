@@ -5,10 +5,8 @@ import { DatabaseSeeder } from "../bulkCreate/DatabaseSeeder.js";
 const router = express.Router();
 const databaseSeeder = new DatabaseSeeder();
 
-// Rota para popular o banco com todos os dados
 router.post("/seed", async (req, res) => {
     try {
-        // Chama os métodos de criação de dados
         await databaseSeeder.createProfiles();
         await databaseSeeder.createContracts();
         await databaseSeeder.createJobs();
